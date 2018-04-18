@@ -10,8 +10,13 @@ export const setAttribute = (node, key, value) => {
 	if(key == 'className') {
 		key = 'class'
 	}
-	if(EVENT_REGEXP.test(key) && value) {
-		return node.addEventListener(key.match(EVENT_REGEXP)[1].toLowerCase(), value)
+	if(EVENT_REGEXP.test(key)) {
+		if(value) {
+			node.removeEventListener(key.match(EVENT_REGEXP)[1].toLowerCase(), value)
+			node.addEventListener(key.match(EVENT_REGEXP)[1].toLowerCase(), value)
+		} else {
+			node.removeEventListener(key.match(EVENT_REGEXP)[1].toLowerCase(), value)
+		}
 	} else if(key == 'style' && value) {
 		if(isString(value)) {
 			node.style.cssText = value
@@ -25,4 +30,8 @@ export const setAttribute = (node, key, value) => {
 	} else {
 		node.removeAttribute(key)
 	}
+}
+
+export const removeAttribute = () => {
+
 }

@@ -5,17 +5,29 @@
 import { Component } from '../react'
 import { setAttribute } from './dom'
 import { isString, isNumber, isFunction } from './util'
+import { diff, diffNode } from './diff'
 
 // 创建组件 - 兼容
-function createComponent(component, props) {
+export function createComponent(component, props) {
 	if(component.prototype && component.prototype.render) {
 		return new component(props)
 	} else {
 		const instance = new Component(props)
+		instance.constructor = component
 		instance.render = function() {
-			return component.call(this)
+			return this.constructor()
 		}
 		return instance
+	}
+}
+
+// 卸载组件
+export function unmoutComponent(component) {
+	if(component.componentWillUnmount) {
+		component.componentWillUnmount()
+	}
+	if(component.base && component.base.parentNode) {
+		component.base.parentNode.removeChild(component.base)
 	}
 }
 
@@ -26,7 +38,7 @@ export function renderComponent(component) {
 		component.componentWillUpdate()
 	}
 
-	const base = renderNode(rendered)
+	const base = diffNode(component.base, rendered)
 	if(component.base) {
 		if(component.componentDidUpdate) {
 			component.componentDidUpdate()
@@ -35,16 +47,18 @@ export function renderComponent(component) {
 		component.componentDidMount()
 	}
 
-	if(component.base && component.base.parentNode) {
-		component.base.parentNode.replaceChild(base, component.base)
-	}
+	// 使用 diff
+	// if(component.base && component.base.parentNode) {
+	// 	component.base.parentNode.replaceChild(base, component.base)
+	// }
+
 	component.base = base
 	base._component = component
 	return base
 }
 
 // render 前生命周期
-function setComponentProps(component, props) {
+export function setComponentProps(component, props) {
 	if(!component.base) {
 		if(component.componentWillMount) {
 			component.componentWillMount()
@@ -56,7 +70,7 @@ function setComponentProps(component, props) {
 	renderComponent(component)
 }
 
-function renderNode(node) {
+export function renderNode(node) {
 	if(node == undefined || node == null) {
 		node = ''
 	}
@@ -83,6 +97,6 @@ function renderNode(node) {
 	return dom
 }
 
-export function render(node, container) {
-	return container.appendChild(renderNode(node))
+export function render(vnode, container, node) {
+	return diff(node, vnode, container)
 }

@@ -3,9 +3,11 @@
  */
 
 const createElement = (tag, attrs, ...children) => {
+	attrs = attrs || { key: undefined }
 	return {
 		tag,
 		attrs,
+		key: attrs.key,
 		children
 	}
 }
