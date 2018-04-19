@@ -2,7 +2,7 @@
  * Created by huangw1 on 2018/4/17.
  */
 
-import ReactDom from '../react-dom'
+import enqueueState from './state-queue'
 
 export default class Component {
 
@@ -13,7 +13,8 @@ export default class Component {
 	}
 
 	setState(newState) {
-		Object.assign(this.state, newState)
-		ReactDom.renderComponent(this)
+		// Object.assign(this.state, newState)
+		// renderComponent(this)
+		enqueueState(newState, this)
 	}
 }
