@@ -113,7 +113,7 @@ function diffChildren(node, vnode) {
 		let vchildrenLength = vchildren.length
 		vchildren.forEach((vchild, index) => {
 			let child = null
-			const key = vchild
+			const key = vchild.key
 			if(key) {
 				if(keyChildren[key]) {
 					child = keyChildren[key]
@@ -144,7 +144,7 @@ function diffChildren(node, vnode) {
 					node.appendChild(child)
 				} else if(childNodes[index].nextSibling == child) {
 					if(child.parentNode) {
-						child.parentNode.removeChild(child)
+						child.parentNode.removeChild(childNodes[index])
 					}
 				} else {
 					node.insertBefore(child, childNodes[index])
